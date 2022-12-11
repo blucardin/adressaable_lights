@@ -6,12 +6,8 @@ import numpy as np
 
 arduino = serial.Serial(port='/dev/cu.usbmodem144401', baudrate=115200, timeout=.1)
 
-def write_read(x, r, g, b, s):
+def write_read(x):
     arduino.write(bytes(str(x), 'utf-8'))
-    arduino.write(bytes(str(r), 'utf-8'))
-    arduino.write(bytes(str(g), 'utf-8'))
-    arduino.write(bytes(str(b), 'utf-8'))
-    arduino.write(bytes(str(s), 'utf-8'))
     time.sleep(0.05)
 
 positions = []
@@ -23,7 +19,7 @@ for x in range(0, 500):
 
     # Capture the video frame
     # by frame
-    write_read(x, 255, 255, 255, 0)
+    write_read(x)
 
     ret, frame = vid.read()
 
@@ -69,8 +65,10 @@ print(max_x, max_y)
 #show the image with opencv
 cv2.imshow('image', img)
 
+input("Press Enter to continue...")
+
 # loop through the positions and turn the pixels on if they are white
 for idx, position in enumerate(positions):
     if img[position[1], position[0]][0] > 10 or img[position[1], position[0]][1] > 10 or img[position[1], position[0]][2] > 10:
-        write_read(idx, 255, 255, 255, 1)
+        write_read(idx)
         print("written")
