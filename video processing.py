@@ -4,10 +4,10 @@ import serial
 import time
 import numpy as np
 
-arduino = serial.Serial(port='/dev/cu.usbmodem144401', baudrate=115200, timeout=.1)
+arduino = serial.Serial(port='/dev/cu.usbmodem1441201', baudrate=2000000, timeout=.1)
 
-def write_read(x):
-    arduino.write(bytes(str(x), 'utf-8'))
+def color(x, r, g, b, s):
+    arduino.write(bytes(str(x) + "," + str(r) + "," + str(g) + "," + str(b) + "," + str(s), 'utf-8'))
     time.sleep(0.05)
 
 positions = []
@@ -19,7 +19,7 @@ for x in range(0, 500):
 
     # Capture the video frame
     # by frame
-    write_read(x)
+    color(x, 255, 255, 255, 1)
 
     ret, frame = vid.read()
 
@@ -47,6 +47,9 @@ vid.release()
 # Destroy all the windows
 cv2.destroyAllWindows()
 
+#close the video capture
+vid.release()
+
 # find the max value x and y coordinates
 max_x = max(positions, key=lambda item:item[0])[0]
 max_y = max(positions, key=lambda item:item[1])[1]
@@ -65,10 +68,8 @@ print(max_x, max_y)
 #show the image with opencv
 cv2.imshow('image', img)
 
-input("Press Enter to continue...")
-
 # loop through the positions and turn the pixels on if they are white
 for idx, position in enumerate(positions):
     if img[position[1], position[0]][0] > 10 or img[position[1], position[0]][1] > 10 or img[position[1], position[0]][2] > 10:
-        write_read(idx)
+        color(idx, img[position[1], position[0]][2], img[position[1], position[0]][1], img[position[1], position[0]][0], 0)
         print("written")
